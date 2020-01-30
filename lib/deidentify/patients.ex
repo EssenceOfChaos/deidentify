@@ -52,9 +52,9 @@ defmodule Deidentify.Patients do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_record(attrs \\ %{}) do
+  def create_record(attrs) do
     deidentify(attrs)
-    |> Record.changeset(attrs)
+    |> Record.changeset()
     |> Repo.insert()
   end
 
@@ -150,8 +150,6 @@ defmodule Deidentify.Patients do
   defp normalize_notes(notes) when is_nil(notes), do: notes
 
   defp normalize_notes(notes) when is_binary(notes) do
-    Logger.info("normalize notes being called")
-
     if String.contains?(notes, "/") do
       words = String.split(notes)
       date = Enum.filter(words, fn word -> String.contains?(word, "/") end)

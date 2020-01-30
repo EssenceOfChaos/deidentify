@@ -11,17 +11,6 @@ defmodule DeidentifyWeb.RecordController do
     render(conn, "index.json", records: records)
   end
 
-  # def create(conn, %{"record" => record_params}) do
-  #   with {:ok, %Record{} = record} <- Patients.create_record(record_params) do
-  #     IO.inspect(record_params)
-
-  #     conn
-  #     |> put_status(:created)
-  #     |> put_resp_header("location", Routes.record_path(conn, :show, record))
-  #     |> render("show.json", record: record)
-  #   end
-  # end
-
   def create(conn, record_params) do
     with {:ok, %Record{} = record} <- Patients.create_record(record_params) do
       conn

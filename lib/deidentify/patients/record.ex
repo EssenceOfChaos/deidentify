@@ -16,10 +16,11 @@ defmodule Deidentify.Patients.Record do
   end
 
   @doc false
-  def changeset(record, attrs) do
+  def changeset(record, attrs \\ %{}) do
     record
     |> cast(attrs, [:age, :zipcode, :admission_year, :discharge_year, :notes])
     |> validate_required([:age, :zipcode, :admission_year, :discharge_year])
-    |> validate_inclusion(:age, 18..130)
+
+    # |> validate_inclusion(:age, 18..130)
   end
 end
