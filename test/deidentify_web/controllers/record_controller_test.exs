@@ -5,20 +5,26 @@ defmodule DeidentifyWeb.RecordControllerTest do
   alias Deidentify.Patients.Record
 
   @create_attrs %{
-    admission_year: "some admission_year",
-    age: "some age",
-    dischargeYear: "some dischargeYear",
-    notes: "some notes",
-    zipcode: "some zipcode"
+    "admissionDate" => "2019-03-12",
+    "birthDate" => "2000-01-01",
+    "dischargeDate" => "2019-03-14",
+    "notes" => "Patient with ssn 123-45-6789 previously presented under different ssn",
+    "zipCode" => "10013"
   }
   @update_attrs %{
-    admission_year: "some updated admission_year",
-    age: "some updated age",
-    dischargeYear: "some updated dischargeYear",
-    notes: "some updated notes",
-    zipcode: "some updated zipcode"
+    "admissionDate" => "2018-03-12",
+    "birthDate" => "2005-01-01",
+    "dischargeDate" => "2019-03-14",
+    "notes" => "Patient with ssn 123-45-6788 has updated status",
+    "zipCode" => "10018"
   }
-  @invalid_attrs %{admission_year: nil, age: nil, dischargeYear: nil, notes: nil, zipcode: nil}
+  @invalid_attrs %{
+    "admissionDate" => nil,
+    "birthDate" => nil,
+    "dischargeDate" => nil,
+    "notes" => nil,
+    "zipCode" => nil
+  }
 
   def fixture(:record) do
     {:ok, record} = Patients.create_record(@create_attrs)
@@ -45,41 +51,16 @@ defmodule DeidentifyWeb.RecordControllerTest do
 
       assert %{
                "id" => id,
-               "admission_year" => "some admission_year",
-               "age" => "some age",
-               "dischargeYear" => "some dischargeYear",
-               "notes" => "some notes",
-               "zipcode" => "some zipcode"
+               "admission_year" => "2019",
+               "age" => "20",
+               "discharge_year" => "2019",
+               "notes" => "Patient with ssn XXX-XX-XXXX previously presented under different ssn",
+               "zipcode" => "100"
              } = json_response(conn, 200)["data"]
     end
 
     test "renders errors when data is invalid", %{conn: conn} do
       conn = post(conn, Routes.record_path(conn, :create), record: @invalid_attrs)
-      assert json_response(conn, 422)["errors"] != %{}
-    end
-  end
-
-  describe "update record" do
-    setup [:create_record]
-
-    test "renders record when data is valid", %{conn: conn, record: %Record{id: id} = record} do
-      conn = put(conn, Routes.record_path(conn, :update, record), record: @update_attrs)
-      assert %{"id" => ^id} = json_response(conn, 200)["data"]
-
-      conn = get(conn, Routes.record_path(conn, :show, id))
-
-      assert %{
-               "id" => id,
-               "admission_year" => "some updated admission_year",
-               "age" => "some updated age",
-               "dischargeYear" => "some updated dischargeYear",
-               "notes" => "some updated notes",
-               "zipcode" => "some updated zipcode"
-             } = json_response(conn, 200)["data"]
-    end
-
-    test "renders errors when data is invalid", %{conn: conn, record: record} do
-      conn = put(conn, Routes.record_path(conn, :update, record), record: @invalid_attrs)
       assert json_response(conn, 422)["errors"] != %{}
     end
   end

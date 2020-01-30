@@ -6,9 +6,27 @@ defmodule Deidentify.PatientsTest do
   describe "records" do
     alias Deidentify.Patients.Record
 
-    @valid_attrs %{admission_year: "some admission_year", age: "some age", dischargeYear: "some dischargeYear", notes: "some notes", zipcode: "some zipcode"}
-    @update_attrs %{admission_year: "some updated admission_year", age: "some updated age", dischargeYear: "some updated dischargeYear", notes: "some updated notes", zipcode: "some updated zipcode"}
-    @invalid_attrs %{admission_year: nil, age: nil, dischargeYear: nil, notes: nil, zipcode: nil}
+    @valid_attrs %{
+      "admissionDate" => "2019-03-12",
+      "birthDate" => "2000-01-01",
+      "dischargeDate" => "2019-03-14",
+      "notes" => "Patient with ssn 123-45-6789 previously presented under different ssn",
+      "zipCode" => "10013"
+    }
+    @update_attrs %{
+      "admissionDate" => "2018-03-12",
+      "birthDate" => "1995-01-01",
+      "dischargeDate" => "2019-03-14",
+      "notes" => "Patient with ssn 123-45-6788 has updated status",
+      "zipCode" => "10018"
+    }
+    @invalid_attrs %{
+      "admissionDate" => nil,
+      "birthDate" => nil,
+      "dischargeDate" => nil,
+      "notes" => nil,
+      "zipCode" => nil
+    }
 
     def record_fixture(attrs \\ %{}) do
       {:ok, record} =
@@ -31,31 +49,18 @@ defmodule Deidentify.PatientsTest do
 
     test "create_record/1 with valid data creates a record" do
       assert {:ok, %Record{} = record} = Patients.create_record(@valid_attrs)
-      assert record.admission_year == "some admission_year"
-      assert record.age == "some age"
-      assert record.dischargeYear == "some dischargeYear"
-      assert record.notes == "some notes"
-      assert record.zipcode == "some zipcode"
+      assert record.admission_year == "2019"
+      assert record.age == "20"
+      assert record.discharge_year == "2019"
+
+      assert record.notes ==
+               "Patient with ssn 123-45-6789 previously presented under different ssn"
+
+      assert record.zipcode == "100"
     end
 
     test "create_record/1 with invalid data returns error changeset" do
       assert {:error, %Ecto.Changeset{}} = Patients.create_record(@invalid_attrs)
-    end
-
-    test "update_record/2 with valid data updates the record" do
-      record = record_fixture()
-      assert {:ok, %Record{} = record} = Patients.update_record(record, @update_attrs)
-      assert record.admission_year == "some updated admission_year"
-      assert record.age == "some updated age"
-      assert record.dischargeYear == "some updated dischargeYear"
-      assert record.notes == "some updated notes"
-      assert record.zipcode == "some updated zipcode"
-    end
-
-    test "update_record/2 with invalid data returns error changeset" do
-      record = record_fixture()
-      assert {:error, %Ecto.Changeset{}} = Patients.update_record(record, @invalid_attrs)
-      assert record == Patients.get_record!(record.id)
     end
 
     test "delete_record/1 deletes the record" do

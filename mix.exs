@@ -47,6 +47,7 @@ defmodule Deidentify.MixProject do
       {:jason, "~> 1.0"},
       {:plug_cowboy, "~> 2.0"},
       ## Added Deps ##
+      {:csv, "~> 2.3"},
       {:credo, "~> 1.1.0", only: [:dev, :test], runtime: false}
     ]
   end

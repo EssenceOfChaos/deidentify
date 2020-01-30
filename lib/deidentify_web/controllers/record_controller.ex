@@ -23,9 +23,6 @@ defmodule DeidentifyWeb.RecordController do
   # end
 
   def create(conn, record_params) do
-    IO.inspect(record_params)
-    record = Patients.deidentify(record_params)
-
     with {:ok, %Record{} = record} <- Patients.create_record(record_params) do
       conn
       |> put_status(:created)

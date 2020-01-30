@@ -4,6 +4,7 @@ defmodule Deidentify.Application do
   @moduledoc false
 
   use Application
+  alias Deidentify.ZipcodeManager
 
   def start(_type, _args) do
     # List all child processes to be supervised
@@ -11,7 +12,8 @@ defmodule Deidentify.Application do
       # Start the Ecto repository
       Deidentify.Repo,
       # Start the endpoint when the application starts
-      DeidentifyWeb.Endpoint
+      DeidentifyWeb.Endpoint,
+      ZipcodeManager
       # Starts a worker by calling: Deidentify.Worker.start_link(arg)
       # {Deidentify.Worker, arg},
     ]

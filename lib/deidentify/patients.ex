@@ -6,7 +6,10 @@ defmodule Deidentify.Patients do
   import Ecto.Query, warn: false
   alias Deidentify.Repo
 
+  require Logger
+
   alias Deidentify.Patients.Record
+  alias Deidentify.ZipcodeManager
 
   @doc """
   Returns the list of records.
@@ -102,14 +105,10 @@ defmodule Deidentify.Patients do
     Record.changeset(record, %{})
   end
 
-  # Example Request
-  #   %{
-  #   "admissionDate" => "2019-03-12",
-  #   "birthDate" => "2000-01-01",
-  #   "dischargeDate" => "2019-03-14",
-  #   "notes" => "Patient with ssn 123-45-6789 previously presented under different ssn",
-  #   "zipCode" => "10013"
-  # }
+  def deidentify(%{"record" => record} = _record_params) do
+    deidentify(record)
+  end
+
   def deidentify(
         %{
           "admissionDate" => admissionDate,
@@ -117,25 +116,51 @@ defmodule Deidentify.Patients do
           "dischargeDate" => dischargeDate,
           "notes" => notes,
           "zipCode" => zipCode
-        } = record_params
+        } = _record_params
       ) do
     %Record{
       admission_year: calculate_year(admissionDate),
       age: calculate_age(birthDate),
       discharge_year: calculate_year(dischargeDate),
-      notes: notes,
-      zipcode: zipCode
+      notes: normalize_notes(notes),
+      zipcode: calculate_zip(zipCode)
     }
   end
 
-  defp calculate_age(string_date) do
+  ## Private Functions ##
+  defp calculate_age(string_date) when is_nil(string_date), do: string_date
+
+  defp calculate_age(string_date) when is_binary(string_date) do
     dob = Date.from_iso8601!(string_date)
     today = Date.utc_today()
     Integer.to_string(today.year - dob.year)
   end
 
-  defp calculate_year(string_date) do
+  defp calculate_year(string_date) when is_nil(string_date), do: string_date
+
+  defp calculate_year(string_date) when is_binary(string_date) do
     d = Date.from_iso8601!(string_date)
     Integer.to_string(d.year)
+  end
+
+  defp calculate_zip(zip_string) do
+    ZipcodeManager.normalize_zip(zip_string)
+  end
+
+  defp normalize_notes(notes) when is_nil(notes), do: notes
+
+  defp normalize_notes(notes) when is_binary(notes) do
+    Logger.info("normalize notes being called")
+
+    if String.contains?(notes, "/") do
+      words = String.split(notes)
+      date = Enum.filter(words, fn word -> String.contains?(word, "/") end)
+      date_string = hd(date)
+      l = String.split(date_string, "/")
+      year = List.last(l)
+      String.replace(notes, date_string, year)
+    else
+      String.replace(notes, ~r/\d/, "X")
+    end
   end
 end
