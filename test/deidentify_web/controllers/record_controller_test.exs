@@ -35,13 +35,6 @@ defmodule DeidentifyWeb.RecordControllerTest do
     {:ok, conn: put_req_header(conn, "accept", "application/json")}
   end
 
-  describe "index" do
-    test "lists all records", %{conn: conn} do
-      conn = get(conn, Routes.record_path(conn, :index))
-      assert json_response(conn, 200)["data"] == []
-    end
-  end
-
   describe "create record" do
     test "renders record when data is valid", %{conn: conn} do
       conn = post(conn, Routes.record_path(conn, :create), record: @create_attrs)

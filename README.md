@@ -9,17 +9,10 @@ To start your Phoenix server:
 - Install Node.js dependencies with `cd assets && npm install`
 - Start Phoenix endpoint with `mix phx.server`
 
-Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
+Now you can visit [`localhost:4000/api/records`](http://localhost:4000/api/records) from your browser.
 
-Ready to run in production? Please [check our deployment guides](https://hexdocs.pm/phoenix/deployment.html).
+## Testing
 
-## Learn more
+Run the test suite with `mix test`.
 
-- Official website: http://www.phoenixframework.org/
-- Guides: https://hexdocs.pm/phoenix/overview.html
-- Docs: https://hexdocs.pm/phoenix
-- Mailing list: http://groups.google.com/group/phoenix-talk
-- Source: https://github.com/phoenixframework/phoenix
-
-ZipcodeManager.normalize_zip("10013")
-Deidentify.Patients.normalize_notes("Patient social is 123-45-6789")
+If everything is installed correctly you should see, `11 tests, 0 failures`.

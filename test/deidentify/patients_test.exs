@@ -37,11 +37,6 @@ defmodule Deidentify.PatientsTest do
       record
     end
 
-    test "list_records/0 returns all records" do
-      record = record_fixture()
-      assert Patients.list_records() == [record]
-    end
-
     test "get_record!/1 returns the record with given id" do
       record = record_fixture()
       assert Patients.get_record!(record.id) == record
@@ -54,7 +49,7 @@ defmodule Deidentify.PatientsTest do
       assert record.discharge_year == "2019"
 
       assert record.notes ==
-               "Patient with ssn 123-45-6789 previously presented under different ssn"
+               "Patient with ssn XXX-XX-XXXX previously presented under different ssn"
 
       assert record.zipcode == "100"
     end
