@@ -12,19 +12,6 @@ defmodule Deidentify.Patients do
   alias Deidentify.ZipcodeManager
 
   @doc """
-  Returns the list of records.
-
-  ## Examples
-
-      iex> list_records()
-      [%Record{}, ...]
-
-  """
-  def list_records do
-    Repo.all(Record)
-  end
-
-  @doc """
   Gets a single record.
 
   Raises `Ecto.NoResultsError` if the Record does not exist.
@@ -133,7 +120,13 @@ defmodule Deidentify.Patients do
   defp calculate_age(string_date) when is_binary(string_date) do
     dob = Date.from_iso8601!(string_date)
     today = Date.utc_today()
-    Integer.to_string(today.year - dob.year)
+    age = Integer.to_string(today.year - dob.year)
+
+    if String.to_integer(age) >= 90 do
+      "90"
+    else
+      age
+    end
   end
 
   defp calculate_year(string_date) when is_nil(string_date), do: string_date

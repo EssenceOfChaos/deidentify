@@ -1,0 +1,137 @@
+{
+	"info": {
+		"_postman_id": "db4c632f-8f0b-422c-9449-b5d5337498bc",
+		"name": "Deidentify",
+		"description": "Testing the /api/records endpoint to anonymize patient data.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Post - ssn",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "1ac11825-95b0-4017-b139-43c9b2b5547a",
+						"exec": [
+							"// Verify the correct status code is returned",
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"// Test the API returns only the year from the admissionDate field",
+							"pm.test(\"Verify admission_year is just the year from admissionDate\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData[\"data\"][\"admission_year\"]).to.eql(\"2019\");",
+							"});",
+							"",
+							"// Test the API returns only the year from the dischargeDate field",
+							"pm.test(\"Verify discharge_year is just the year from dischargeDate\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData[\"data\"][\"discharge_year\"]).to.eql(\"2019\");",
+							"});",
+							"",
+							"// Test the API blocks out the social number",
+							"pm.test(\"Verify the social security number is blocked out\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData[\"data\"][\"notes\"]).to.eql(\"Patient with ssn XXX-XX-XXXX\");",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"birthDate\": \"2000-01-01\",\n    \"zipCode\": \"10013\",\n    \"admissionDate\": \"2019-03-12\",\n    \"dischargeDate\": \"2019-03-14\",\n    \"notes\": \"Patient with ssn 123-45-6789\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:4000/api/records",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"api",
+						"records"
+					]
+				},
+				"description": "Example input"
+			},
+			"response": []
+		},
+		{
+			"name": "Post - date",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "06708462-c8d1-44b4-8f27-965cc1c88f27",
+						"exec": [
+							"// Verify the correct status code is given",
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"// Test the API blocks out the social number",
+							"pm.test(\"Verify any dates just show the year\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData[\"data\"][\"notes\"]).to.eql(\"Patient with dob 1999\");",
+							"});",
+							"",
+							"// Test that people over the age of 90 just show as 90",
+							"pm.test(\"A person over 90 should just show 90\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData[\"data\"][\"age\"]).to.eql(\"90\");",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"birthDate\": \"1915-01-01\",\n    \"zipCode\": \"10013\",\n    \"admissionDate\": \"2019-03-12\",\n    \"dischargeDate\": \"2019-03-14\",\n    \"notes\": \"Patient with dob 12/12/1999\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:4000/api/records",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"api",
+						"records"
+					]
+				},
+				"description": "Check response when the notes section has a date"
+			},
+			"response": []
+		}
+	]
+}
